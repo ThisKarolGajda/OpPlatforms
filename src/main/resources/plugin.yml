@@ -1,0 +1,4 @@
+name: OpPlatforms
+version: '${project.version}'
+main: me.opkarol.opplatforms.PluginStarter
+api-version: 1.19

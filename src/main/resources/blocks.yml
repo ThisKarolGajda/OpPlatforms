@@ -1,0 +1,4 @@
+blocks:
+  # Price per block
+  stone: 1
+  diamond_ore: 5
