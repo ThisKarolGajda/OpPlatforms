@@ -1,37 +1,40 @@
 package me.opkarol.opplatforms;
 
 import me.opkarol.opc.api.gui.holder.InventoriesHolder;
-import me.opkarol.opc.api.map.OpMap;
 import me.opkarol.opc.api.plugins.OpMessagesPlugin;
 import me.opkarol.opplatforms.block.AllowedBlocksWithPrice;
-import me.opkarol.opplatforms.blockbuilder.BlockBuilder;
+import me.opkarol.opplatforms.blockbuilder.ActiveBlockBuilder;
 import me.opkarol.opplatforms.blockbuilder.BlockBuilderCooldown;
+import me.opkarol.opplatforms.blockbuilder.BlockBuilderTool;
 import me.opkarol.opplatforms.commands.PlatformMainCommand;
-import me.opkarol.opplatforms.commands.PlatformSettingsCommand;
 import me.opkarol.opplatforms.events.PlayerQuit;
 import me.opkarol.opplatforms.events.WandClick;
 import me.opkarol.opplatforms.inventories.BlockChangeInventory;
 import me.opkarol.opplatforms.inventories.PlatformConfirmInventory;
 import me.opkarol.opplatforms.inventories.PlatformMainInventory;
 import me.opkarol.opplatforms.inventories.PlatformSettingsInventory;
-
-import java.util.UUID;
+import me.opkarol.opplatforms.wand.WandDatabase;
 
 public final class PluginStarter extends OpMessagesPlugin {
-    private final OpMap<UUID, BlockBuilder> map = new OpMap<>();
+    //todo clear saved block builder after item drop
+
     private final InventoriesHolder holder = new InventoriesHolder();
     private AllowedBlocksWithPrice blocksWithPrice;
+
+    private final ActiveBlockBuilder activeBlockBuilder = new ActiveBlockBuilder();
+
+    private final WandDatabase wandDatabase = new WandDatabase();
 
     @Override
     public void enable() {
         getMap().getConfiguration().updateConfig();
+
         new BlockBuilderCooldown();
+        new BlockBuilderTool(this);
 
         blocksWithPrice = new AllowedBlocksWithPrice(this);
 
         new PlayerPlatformSettings(this);
-        new PlatformSettingsCommand(holder, blocksWithPrice);
-        new PlatformMainCommand(this);
 
         new WandClick(this);
         new PlayerQuit(this);
@@ -43,11 +46,13 @@ public final class PluginStarter extends OpMessagesPlugin {
     }
 
     @Override
-    public void disable() { }
-
-    public OpMap<UUID, BlockBuilder> getBlockMap() {
-        return map;
+    public boolean registerCommandsWithBrigadier() {
+        getCommandHandler().register(new PlatformMainCommand(this));
+        return true;
     }
+
+    @Override
+    public void disable() { }
 
     public InventoriesHolder getInventoriesHolder() {
         return holder;
@@ -55,5 +60,14 @@ public final class PluginStarter extends OpMessagesPlugin {
 
     public AllowedBlocksWithPrice getBlocksWithPrice() {
         return blocksWithPrice;
+    }
+
+
+    public ActiveBlockBuilder getActiveBlockBuilder() {
+        return activeBlockBuilder;
+    }
+
+    public WandDatabase getWandDatabase() {
+        return wandDatabase;
     }
 }

@@ -41,14 +41,38 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <outputFile>E:\Servers\1.19.3\plugins\${project.name}.jar</outputFile>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <includes>
+                                        <include>me/opkarol/**</include>
+                                        <include>plugin.yml</include>
+                                        <include>config.yml</include>
+                                        <include>blocks.yml</include>
+                                        <include>com/tchristofferson/configupdater/**</include>
+                                        <include>com/zaxxer/hikari/**</include>
+                                        <include>revxrsal/commands/**</include>
+                                        <include>net/wesjd/anvilgui/**</include>
+                                        <include>messages.yml</include>
+                                    </includes>
+                                </filter>
+                            </filters>
                             <relocations>
                                 <relocation>
                                     <pattern>com.tchristofferson.configupdater</pattern>
                                     <shadedPattern>me.opkarol.opc.configupdater</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>net.wesjd.anvilgui</pattern>
+                                    <shadedPattern>me.opkarol.opc.anvilgui</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>me.opkarol.opc.hikaricp</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>revxrsal.commands</pattern>
+                                    <shadedPattern>me.opkarol.opc.commands</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -76,6 +100,10 @@
             <id>codemc-snapshots</id>
             <url>https://repo.codemc.io/repository/maven-snapshots/</url>
         </repository>
+        <repository>
+            <id>iridiumdevelopment</id>
+            <url>https://nexus.iridiumdevelopment.net/repository/maven-releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -88,7 +116,7 @@
         <dependency>
             <groupId>com.github.ThisKarolGajda</groupId>
             <artifactId>OpC</artifactId>
-            <version>63e50547ef</version>
+            <version>f36f8721ef</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -96,6 +124,12 @@
             <artifactId>anvilgui</artifactId>
             <version>1.6.3-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.iridium</groupId>
+            <artifactId>IridiumSkyblock</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

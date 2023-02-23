@@ -9,14 +9,11 @@ public class RunnableList extends ActionMap<OpRunnable> {
 
     public void add(OpRunnable object, boolean isVector1) {
         object.runTaskTimer(15L);
+        stopSelected(isVector1);
         setRunnable(isVector1 ? LEFT_POSITION_INDEX : RIGHT_POSITION_INDEX, object);
     }
 
     private void setRunnable(int index, OpRunnable object) {
-        OpRunnable runnable = get(index);
-        if (runnable != null) {
-            runnable.cancel();
-        }
         set(object, index);
     }
 
@@ -25,5 +22,12 @@ public class RunnableList extends ActionMap<OpRunnable> {
             runnable.cancel();
         }
         clear();
+    }
+
+    public void stopSelected(boolean isVector1) {
+        OpRunnable runnable = get(isVector1 ? LEFT_POSITION_INDEX : RIGHT_POSITION_INDEX);
+        if (runnable != null) {
+            runnable.cancelTask();
+        }
     }
 }

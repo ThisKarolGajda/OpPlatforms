@@ -5,8 +5,8 @@ import me.opkarol.opc.api.gui.holder.IInventoryHolder;
 import me.opkarol.opc.api.gui.inventory.InventoryFactory;
 import me.opkarol.opc.api.gui.items.InventoryItem;
 import me.opkarol.opplatforms.PluginStarter;
-import me.opkarol.opplatforms.blockbuilder.BlockBuilder;
 import me.opkarol.opplatforms.blockbuilder.BlockBuilderTool;
+import me.opkarol.opplatforms.wand.Wand;
 import me.opkarol.opplatforms.wand.WandItemData;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,20 +28,24 @@ public class PlatformConfirmInventory implements IInventoryHolder {
             event.setCancelled(true);
             event.close();
             Player player = (Player) event.getPlayer();
-            if (!WandItemData.hasWandPdc(event.getPlayer().getInventory().getItemInMainHand())) {
+            if (!WandItemData.hasWandPdc(player.getInventory().getItemInMainHand())) {
                 sendMappedMessage(player, "wandError");
                 return;
             }
 
-            BlockBuilderTool.startBuilder(player, pluginStarter.getBlockMap());
+            BlockBuilderTool.startBuilder(player);
         })
                 .name("&a&lPotwierdź budowę platformy");
 
         InventoryItem DECLINE_BUTTON = new InventoryItem(Material.RED_CONCRETE, e -> {
             Player player = (Player) e.getPlayer();
-            Optional<BlockBuilder> builder = pluginStarter.getBlockMap().getByKey(player.getUniqueId());
-            builder.ifPresent(blockBuilder -> BlockBuilderTool.stopPreTasks(player, pluginStarter.getBlockMap(), blockBuilder));
-            sendMappedMessage(player, "cancelledPlatform");
+            WandItemData.getWandUUID(e.getPlayer().getInventory().getItemInMainHand()).ifPresent(uuid -> {
+                Optional<Wand> optional = pluginStarter.getWandDatabase().getWand(uuid);
+                optional.ifPresent(wand -> BlockBuilderTool.stopPreTasks(player, wand.getBuilder()));
+                pluginStarter.getActiveBlockBuilder().remove(player.getUniqueId());
+                pluginStarter.getWandDatabase().remove(player);
+                sendMappedMessage(player, "cancelledPlatform");
+            });
             e.setCancelled(true);
             e.close();
         })

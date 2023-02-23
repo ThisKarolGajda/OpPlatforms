@@ -1,9 +1,7 @@
 package me.opkarol.opplatforms.events;
 
 import me.opkarol.opc.api.event.EventRegister;
-import me.opkarol.opc.api.map.OpMap;
 import me.opkarol.opplatforms.PluginStarter;
-import me.opkarol.opplatforms.blockbuilder.BlockBuilder;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -14,11 +12,10 @@ public class PlayerQuit {
         EventRegister.registerEvent(PlayerQuitEvent.class, event -> {
             Player player = event.getPlayer();
             UUID uuid = player.getUniqueId();
-            OpMap<UUID, BlockBuilder> blockMap = pluginStarter.getBlockMap();
-            if (blockMap.containsKey(uuid)) {
-                blockMap.unsafeGet(uuid).getRunnableList().stop();
-                blockMap.remove(uuid);
-            }
+            pluginStarter.getWandDatabase().getMap().getByKey(uuid).ifPresent(wand -> {
+                wand.getBuilder().getRunnableList().stop();
+                pluginStarter.getWandDatabase().remove(player);
+            });
         });
     }
 }

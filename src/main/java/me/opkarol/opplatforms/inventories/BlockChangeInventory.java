@@ -1,6 +1,5 @@
 package me.opkarol.opplatforms.inventories;
 
-import me.opkarol.opc.OpAPI;
 import me.opkarol.opc.api.gui.OpInventory;
 import me.opkarol.opc.api.gui.holder.IInventoryHolder;
 import me.opkarol.opc.api.gui.inventory.PagedInventoryFactory;
@@ -9,6 +8,8 @@ import me.opkarol.opc.api.gui.items.InventoryItemSpecialData;
 import me.opkarol.opplatforms.block.AllowedBlocksWithPrice;
 import me.opkarol.opplatforms.block.BlockInventoryObject;
 import org.bukkit.Material;
+
+import java.util.stream.Collectors;
 
 public class BlockChangeInventory implements IInventoryHolder {
     private final OpInventory inventory;
@@ -25,9 +26,9 @@ public class BlockChangeInventory implements IInventoryHolder {
                 .name("&bPoprzednia strona");
         previousPageItem.addSpecialData(InventoryItemSpecialData.PAGED_INVENTORY_BUTTON_PREVIOUS);
 
-        for (String string : blocksWithPrice.getMap().keySet()) {
-            this.inventory.setInventoryObject(new BlockInventoryObject(string, blocksWithPrice.getMap().unsafeGet(string)));
-        }
+        this.inventory.setInventoryObjects(blocksWithPrice.getMap().keySet().stream()
+                .map(string -> new BlockInventoryObject(string, blocksWithPrice.getMap().unsafeGet(string)))
+                .collect(Collectors.toList()));
 
         inventory.setGlobalItem(previousPageItem, 18);
         inventory.setGlobalItem(nextPageItem, 26);

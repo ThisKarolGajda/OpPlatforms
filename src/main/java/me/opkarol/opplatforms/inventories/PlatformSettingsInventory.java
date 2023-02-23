@@ -25,7 +25,7 @@ public class PlatformSettingsInventory implements IInventoryHolder {
                             .ifPresent(inventory -> inventory.getInventory().openInventory(e.getPlayer()));
                 })
                 .name("#<5389FD>&lZmień blok platform")
-                .lore(Arrays.asList("&7Blok platformy jest to materiał", "&7z którego będą budowane platformy.", "", "&7Naciśnij #<5389FD>LPM&7, a otworzy Ci się", "&7ekwipunek, który ma możliwość zmiany bloku.", "", "#<5389FD>Niektóre bloki są zabronione &7dlatego", "&7nie będziesz mógł ich użyć.", "", "&7Pamiętaj: #<5389FD>Każdy blok ma swoją własną cenę&7."));
+                .lore(Arrays.asList("&7Blok platformy jest to materiał", "&7z którego będą budowane platformy.", "", "&7Naciśnij #<5389FD>LPM&7, a otworzy Ci się", "&7ekwipunek, który ma możliwość zmiany bloku.", "", "#<5389FD>Niektóre bloki są zabronione&7, dlatego", "&7nie będziesz mógł ich użyć.", "", "&7Pamiętaj: #<5389FD>Każdy blok ma swoją własną cenę&7."));
 
         InventoryItem BLOCK_SPEED_ITEM = new InventoryItem(Material.SPECTRAL_ARROW,
                 e -> {

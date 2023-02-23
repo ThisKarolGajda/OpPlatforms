@@ -8,6 +8,7 @@ import me.opkarol.opc.api.tools.runnable.OpRunnable;
 import me.opkarol.opplatforms.PlayerPlatformSetting;
 import me.opkarol.opplatforms.effects.ParticleManager;
 import me.opkarol.opplatforms.effects.RunnableList;
+import me.opkarol.opplatforms.wand.WandItem;
 import me.opkarol.opplatforms.wand.WandItemData;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -89,8 +90,13 @@ public class BlockBuilder {
         if (shouldBeRemoved) {
             player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
             sendMappedMessage(player, "wandBroke");
+        } else {
+            ItemStack item = player.getInventory().getItemInMainHand();
+            WandItem wandItem = new WandItem(item);
+            player.getInventory().setItemInMainHand(wandItem.getItemBuilder().generate());
         }
-        BlockBuilderTool.startBuilderLoop(queue, setting, player);
+
+        BlockBuilderTool.startBuilderLoop(this);
     }
 
     public TaskQueue<Block> calculateQueue() {
@@ -98,7 +104,6 @@ public class BlockBuilder {
             return new TaskQueue<>();
         }
 
-        queue.getQueue().clear();
         TaskQueue<Block> temp = new TaskQueue<>();
         int topBlockX = Math.max(vector1.getBlockX(), vector2.getBlockX());
         int bottomBlockX = Math.min(vector1.getBlockX(), vector2.getBlockX());
@@ -124,17 +129,20 @@ public class BlockBuilder {
     }
 
     public void setVector1(Vector vector1) {
-        this.fakeBlocksChanged = true;
-        runnableList.add(new OpRunnable(r -> ParticleManager.place(vector1.toLocation(world), new Particle.DustOptions(Color.RED, 1))), true);
-        clearFakeBlocks(player);
+        setRunnableToVector(vector1, new Particle.DustOptions(Color.RED, 1), true);
         this.vector1 = vector1;
     }
 
     public void setVector2(Vector vector2) {
-        this.fakeBlocksChanged = true;
-        runnableList.add(new OpRunnable(r -> ParticleManager.place(vector2.toLocation(world), new Particle.DustOptions(Color.BLUE, 1))), false);
-        clearFakeBlocks(player);
+        setRunnableToVector(vector2, new Particle.DustOptions(Color.BLUE, 1), false);
         this.vector2 = vector2;
+    }
+
+    private void setRunnableToVector(Vector vector, Particle.DustOptions dustOptions, boolean isVector1) {
+        this.fakeBlocksChanged = true;
+        OpRunnable runnable = new OpRunnable(r -> ParticleManager.place(vector.toLocation(world), dustOptions));
+        runnableList.add(runnable, isVector1);
+        new OpRunnable(r -> runnable.cancelTask()).runTaskLater(1200L);
     }
 
     public void setSetting(PlayerPlatformSetting setting) {
@@ -142,8 +150,15 @@ public class BlockBuilder {
     }
 
     public boolean setWorld(World world) {
-        if (this.world == null || this.world.getName().equals(world.getName())) {
+        if (this.world == null ||
+                this.world.getName().equals(world.getName())) {
             this.world = world;
+            return true;
+        } else if (this.world != null &&
+                !this.world.getName().equals(world.getName())){
+            this.world = world;
+            clearVectors();
+            getRunnableList().stop();
             return true;
         }
         return false;
@@ -215,5 +230,13 @@ public class BlockBuilder {
     public void clearVectors() {
         vector1 = null;
         vector2 = null;
+    }
+
+    public TaskQueue<Block> getQueue() {
+        return queue;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }
